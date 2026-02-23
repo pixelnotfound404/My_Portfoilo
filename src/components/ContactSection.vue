@@ -77,7 +77,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRateLimit } from '@/composables/useRateLimit'
 import { sendToTelegram } from '@/composables/useTelegram'
 import { showToast } from '@/composables/useToast'
@@ -90,8 +90,25 @@ const { check, record, startCountdown } = useRateLimit({
   cooldownMs:  60 * 1000,
   windowMs:    60 * 60 * 1000,
   maxPerHour:  3,
-  onTick: (secs) => { btnLabel.value = `WAIT ${secs}s…`; btnDisabled.value = true },
-  onReady: ()    => { btnLabel.value = 'SEND MESSAGE';   btnDisabled.value = false },
+  onTick: (secs) => {
+    if (secs === 'BLOCKED') {
+      btnLabel.value = '🚫 BLOCKED (24h)'; btnDisabled.value = true
+    } else {
+      btnLabel.value = `WAIT ${secs}s…`; btnDisabled.value = true
+    }
+  },
+  onReady: () => { btnLabel.value = 'SEND MESSAGE'; btnDisabled.value = false },
+})
+
+// Check ban status immediately on page load
+onMounted(() => {
+  const { blocked, banned, reason } = check()
+  if (blocked && banned) {
+    btnLabel.value    = '🚫 BLOCKED (24h)'
+    btnDisabled.value = true
+  } else if (blocked) {
+    startCountdown()
+  }
 })
 
 async function handleSubmit() {
@@ -99,9 +116,11 @@ async function handleSubmit() {
   if (!name || !email || !message) {
     showToast('// Please fill in all required fields', true); return
   }
-  const { blocked, reason, log } = check()
+  const { blocked, banned, reason, log } = check()
   if (blocked) {
-    showToast(reason, true); startCountdown(); return
+    showToast(reason, true)
+    if (!banned) startCountdown()
+    return
   }
 
   btnDisabled.value = true
