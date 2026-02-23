@@ -1,22 +1,9 @@
-const BOT_TOKEN = '8748171041:AAE5kJGAp-z8CAJex9THcEYQIajUZny79k4'
-const CHAT_ID = '869070906'
-
+// Sends form data to our OWN serverless function (/api/contact)
+// The bot token lives on the server — it is NEVER exposed to the browser.
 export function sendToTelegram(name, email, telegram, type, message) {
-    const tgLine = telegram
-        ? `📲 *Telegram:* @${telegram.replace(/^@/, '')}\n`
-        : ''
-
-    const text =
-        `📬 *New message from Scott UX Lab*\n\n` +
-        `👤 *Name:* ${name}\n` +
-        `📧 *Email:* ${email}\n` +
-        tgLine +
-        `🎯 *Project type:* ${type || 'Not specified'}\n\n` +
-        `💬 *Message:*\n${message}`
-
-    return fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+    return fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ chat_id: CHAT_ID, text, parse_mode: 'Markdown' })
+        body: JSON.stringify({ name, email, telegram, type, message }),
     })
 }

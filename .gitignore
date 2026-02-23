@@ -6,10 +6,11 @@ yarn-error.log*
 pnpm-debug.log*
 package-lock.json
 
-# ── Vite build output & cache ─────────────
-dist/
-dist-ssr/
-.vite/
+# ── Environment / secrets ─────────────────
+.env
+.env.local
+.env.*.local
+
 
 # ── Environment / secrets ─────────────────
 .env
