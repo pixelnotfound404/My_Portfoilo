@@ -39,6 +39,12 @@
           </div>
 
           <div class="contact__field">
+            <label class="contact__label" for="field-telegram">// TELEGRAM USERNAME <span style="opacity:0.4;font-size:0.65rem">(optional — so I can reach you directly)</span></label>
+            <input class="contact__input" type="text" id="field-telegram" v-model="form.telegram"
+              placeholder="@username" autocomplete="off" />
+          </div>
+
+          <div class="contact__field">
             <label class="contact__label" for="field-type">// PROJECT TYPE</label>
             <select class="contact__input contact__select" id="field-type" v-model="form.type">
               <option value="" disabled>Select a service…</option>
@@ -76,7 +82,7 @@ import { useRateLimit } from '@/composables/useRateLimit'
 import { sendToTelegram } from '@/composables/useTelegram'
 import { showToast } from '@/composables/useToast'
 
-const form = ref({ name: '', email: '', type: '', message: '' })
+const form = ref({ name: '', email: '', telegram: '', type: '', message: '' })
 const btnLabel    = ref('SEND MESSAGE')
 const btnDisabled = ref(false)
 
@@ -89,7 +95,7 @@ const { check, record, startCountdown } = useRateLimit({
 })
 
 async function handleSubmit() {
-  const { name, email, type, message } = form.value
+  const { name, email, telegram, type, message } = form.value
   if (!name || !email || !message) {
     showToast('// Please fill in all required fields', true); return
   }
@@ -102,11 +108,11 @@ async function handleSubmit() {
   btnLabel.value    = 'SENDING…'
 
   try {
-    const res = await sendToTelegram(name, email, type, message)
+    const res = await sendToTelegram(name, email, telegram, type, message)
     if (!res.ok) throw new Error()
     record(log)
     showToast('✦ Message sent! I\'ll get back to you soon.')
-    form.value = { name: '', email: '', type: '', message: '' }
+    form.value = { name: '', email: '', telegram: '', type: '', message: '' }
     startCountdown()
   } catch {
     showToast('// Failed to send. Try emailing me directly.', true)
