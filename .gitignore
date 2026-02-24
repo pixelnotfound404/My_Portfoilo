@@ -12,11 +12,6 @@ package-lock.json
 .env.*.local
 
 
-# ── Environment / secrets ─────────────────
-.env
-.env.local
-.env.*.local
-
 # ── Editor & OS ───────────────────────────
 .DS_Store
 Thumbs.db
