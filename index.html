@@ -28,35 +28,69 @@
 
   <!-- Inline critical loader styles so the page doesn't flash white -->
   <style>
-    body { margin: 0; background: #0a0a0a; overflow: hidden; }
-    #page-loader {
-      position: fixed; inset: 0; z-index: 99999;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
+    body {
+      margin: 0;
       background: #0a0a0a;
     }
+
+    body.is-loading {
+      overflow: hidden;
+    }
+
+    #page-loader {
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #0a0a0a;
+    }
+
     .loader__logo {
       font-family: 'Barlow Condensed', sans-serif;
-      font-size: 1.8rem; font-weight: 900; letter-spacing: 0.18em;
+      font-size: 1.8rem;
+      font-weight: 900;
+      letter-spacing: 0.18em;
       color: #fff;
     }
-    .loader__logo span { color: #e0ff00; }
-    .loader__bar {
-      margin-top: 1.5rem; width: 120px; height: 2px;
-      background: #222; border-radius: 2px; overflow: hidden;
+
+    .loader__logo span {
+      color: #e0ff00;
     }
+
+    .loader__bar {
+      margin-top: 1.5rem;
+      width: 120px;
+      height: 2px;
+      background: #222;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
     .loader__bar::after {
-      content: ''; display: block; width: 50%;
-      height: 100%; background: #e0ff00;
+      content: '';
+      display: block;
+      width: 50%;
+      height: 100%;
+      background: #e0ff00;
       animation: loader-slide 1.2s ease-in-out infinite;
     }
+
     @keyframes loader-slide {
-      0% { transform: translateX(-100%); }
-      100% { transform: translateX(300%); }
+      0% {
+        transform: translateX(-100%);
+      }
+
+      100% {
+        transform: translateX(300%);
+      }
     }
   </style>
 </head>
 
-<body>
+<body class="is-loading">
   <!-- Loader is in the raw HTML so it shows instantly, before Vue hydrates -->
   <div id="page-loader" aria-hidden="true">
     <div class="loader__logo">✦ SCOTT <span>UX</span> &amp; UI LAB</div>

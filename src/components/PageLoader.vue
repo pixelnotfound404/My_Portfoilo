@@ -19,8 +19,7 @@ onMounted(() => {
       loader.style.transition = 'opacity 0.6s ease, visibility 0.6s ease'
       loader.style.opacity = '0'
       loader.style.visibility = 'hidden'
-      // Re-enable scroll
-      document.body.style.overflow = ''
+      document.body.classList.remove('is-loading')
 
       setTimeout(() => loader.remove(), 700)
     }
