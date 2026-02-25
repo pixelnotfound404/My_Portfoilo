@@ -1,15 +1,15 @@
 // Sends form data to our OWN serverless function (/api/contact)
 // The bot token lives on the server — it is NEVER exposed to the browser.
-export async function sendToTelegram(name, email, telegram, type, message) {
+export async function sendToTelegram(name, email, telegram, type, message, website = '') {
     const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, telegram, type, message }),
+        body: JSON.stringify({ name, email, telegram, type, message, website }),
     })
 
     // Log response details in dev for debugging
-    if (!res.ok) {
-        const errorBody = await res.text().catch(() => '(no body)')
+    if (!res.ok && res.status !== 429) {
+        const errorBody = await res.clone().text().catch(() => '(no body)')
         console.error(`[useTelegram] API responded ${res.status}:`, errorBody)
     }
 

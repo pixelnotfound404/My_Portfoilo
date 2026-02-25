@@ -17,7 +17,14 @@ function devApiPlugin() {
                 // Read request body
                 let body = ''
                 for await (const chunk of req) body += chunk
-                const { name, email, telegram, type, message } = JSON.parse(body)
+                const { name, email, telegram, type, message, website } = JSON.parse(body)
+
+                // Honeypot check — bots fill hidden fields
+                if (website) {
+                    res.statusCode = 200
+                    res.end(JSON.stringify({ ok: true }))
+                    return
+                }
 
                 if (!name || !email || !message) {
                     res.statusCode = 400

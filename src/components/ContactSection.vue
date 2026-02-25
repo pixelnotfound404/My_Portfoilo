@@ -61,6 +61,12 @@
             <textarea class="contact__input contact__textarea" id="field-message" v-model="form.message" rows="5" placeholder="Describe your project, timeline, and goals…"></textarea>
           </div>
 
+          <!-- Honeypot field — hidden from humans, bots will fill it -->
+          <div style="position:absolute;left:-9999px;opacity:0;height:0;overflow:hidden;" aria-hidden="true">
+            <label for="field-website">Website</label>
+            <input type="text" id="field-website" v-model="form.website" tabindex="-1" autocomplete="off" />
+          </div>
+
           <button type="submit" class="contact__submit" id="contact-submit" :disabled="btnDisabled">
             <span>{{ btnLabel }}</span>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
@@ -82,7 +88,7 @@ import { useRateLimit } from '@/composables/useRateLimit'
 import { sendToTelegram } from '@/composables/useTelegram'
 import { showToast } from '@/composables/useToast'
 
-const form = ref({ name: '', email: '', telegram: '', type: '', message: '' })
+const form = ref({ name: '', email: '', telegram: '', type: '', message: '', website: '' })
 const btnLabel    = ref('SEND MESSAGE')
 const btnDisabled = ref(false)
 
@@ -127,11 +133,19 @@ async function handleSubmit() {
   btnLabel.value    = 'SENDING…'
 
   try {
-    const res = await sendToTelegram(name, email, telegram, type, message)
+    const res = await sendToTelegram(name, email, telegram, type, message, form.value.website)
+    if (res.status === 429) {
+      // Server-side rate limit hit
+      const data = await res.json().catch(() => ({}))
+      showToast(`// ${data.error || 'Too many requests — slow down!'}`, true)
+      btnDisabled.value = false
+      btnLabel.value    = 'SEND MESSAGE'
+      return
+    }
     if (!res.ok) throw new Error()
     record(log)
     showToast('✦ Message sent! I\'ll get back to you soon.')
-    form.value = { name: '', email: '', telegram: '', type: '', message: '' }
+    form.value = { name: '', email: '', telegram: '', type: '', message: '', website: '' }
     startCountdown()
   } catch {
     showToast('// Failed to send. Try emailing me directly.', true)
