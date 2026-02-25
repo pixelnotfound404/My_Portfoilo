@@ -10,11 +10,11 @@
 const rateLimitMap = new Map()
 
 const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000  // 1 hour window
-const MAX_REQUESTS_PER_WINDOW = 5             // max 5 msgs per IP per hour
+const MAX_REQUESTS_PER_WINDOW = 3             // max 3 msgs per IP per hour
 const COOLDOWN_MS = 30 * 1000                 // min 30s between messages
 const MAX_FIELD_LENGTH = 2000                 // prevent giant payloads
 const BLOCKED_IPS = new Set()                 // permanent blocks (optional)
-const BAN_THRESHOLD = 15                      // auto-ban after this many in window
+const BAN_THRESHOLD = 5                       // auto-ban after this many in window
 const BAN_DURATION_MS = 24 * 60 * 60 * 1000   // 24h ban
 
 function getClientIP(req) {
