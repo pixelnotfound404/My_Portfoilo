@@ -1,27 +1,29 @@
 <template>
-  <div id="page-loader" :class="{ hidden: isHidden }" aria-hidden="true">
-    <div class="loader__logo">✦ SCOTT <span>UX</span> &amp; UI LAB</div>
-    <div class="loader__bar"></div>
-  </div>
+  <!-- Loader is now rendered inline in index.html for instant display -->
+  <!-- This component just controls when it hides -->
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { onMounted } from 'vue'
 import { splitWords } from '@/composables/useAnimations'
 
-const isHidden = ref(false)
-
 onMounted(() => {
-  // Split hero headline words before loader hides
+  // Split hero headline words while loader is still visible
   document.querySelectorAll('.hero__headline .hero__line').forEach(splitWords)
   document.querySelectorAll('.section-title').forEach(splitWords)
 
+  // Give the page a moment to settle, then reveal
   setTimeout(() => {
-    isHidden.value = true
-    // Remove from DOM after transition so it never blocks clicks
-    setTimeout(() => {
-      document.getElementById('page-loader')?.remove()
-    }, 800)
+    const loader = document.getElementById('page-loader')
+    if (loader) {
+      loader.style.transition = 'opacity 0.6s ease, visibility 0.6s ease'
+      loader.style.opacity = '0'
+      loader.style.visibility = 'hidden'
+      // Re-enable scroll
+      document.body.style.overflow = ''
+
+      setTimeout(() => loader.remove(), 700)
+    }
 
     // Kick off hero entrance
     const hero = document.querySelector('.hero')
