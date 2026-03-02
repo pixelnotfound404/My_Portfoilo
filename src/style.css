@@ -1108,6 +1108,36 @@ spline-viewer {
   color: var(--clr-accent);
 }
 
+/* ── Featured (3rd) project card — full-width horizontal layout ── */
+.project-card:nth-child(3) {
+  grid-column: 1 / -1;
+  flex-direction: row;
+  min-height: 70vh;
+}
+
+.project-card:nth-child(3) .project-card__spline {
+  flex: 1;
+  min-height: unset;
+  height: auto;
+}
+
+.project-card:nth-child(3) .project-card__info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 2.5rem 3rem;
+}
+
+.project-card:nth-child(3) .project-card__desc {
+  max-width: 520px;
+}
+
+.project-card:nth-child(3) .project-card__link {
+  margin: 0 0 0;
+  align-self: flex-start;
+}
+
 /* ── SERVICES ────────────────────────────────────── */
 .services {
   padding: 8rem 5vw;
@@ -1728,6 +1758,20 @@ spline-viewer {
 
   .project-card__spline spline-viewer {
     transform: none;
+  }
+
+  /* Reset 3rd card horizontal layout on tablet/mobile */
+  .project-card:nth-child(3) {
+    flex-direction: column;
+    min-height: 85vh;
+  }
+
+  .project-card:nth-child(3) .project-card__info {
+    padding: 1.5rem 2rem 1rem;
+  }
+
+  .project-card:nth-child(3) .project-card__link {
+    margin: 0 2rem 1.5rem;
   }
 
   /* ── Services ── */
