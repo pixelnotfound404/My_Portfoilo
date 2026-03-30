@@ -22,7 +22,7 @@
     </div>
     <a :href="link" target="_blank" class="project-card__link" :id="linkId"
        @click="handleLinkClick">VIEW CASE →</a>
-    <span v-if="clickCount !== null" class="project-card__views">
+    <span class="project-card__views">
       👁 {{ clickCount }} {{ clickCount === 1 ? 'view' : 'views' }}
     </span>
   </article>
@@ -40,7 +40,7 @@ const props = defineProps({
 
 const splineContainer = ref(null)
 const splineLoaded    = ref(false)
-const clickCount      = ref(null)
+const clickCount      = ref(0)
 let observer = null
 
 onMounted(() => {
