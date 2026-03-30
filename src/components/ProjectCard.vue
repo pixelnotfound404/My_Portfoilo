@@ -21,7 +21,7 @@
       <p class="project-card__tags">{{ tags }}</p>
     </div>
     <a :href="link" target="_blank" class="project-card__link" :id="linkId"
-       @click="trackClick('View Case: ' + title.replace(/<[^>]+>/g, ' ').trim())">VIEW CASE →</a>
+       @click="handleLinkClick">VIEW CASE →</a>
   </article>
 </template>
 
@@ -69,4 +69,11 @@ onMounted(() => {
 onUnmounted(() => {
   if (observer) observer.disconnect()
 })
+
+// Strip HTML from title prop and fire click tracking
+function handleLinkClick() {
+  const raw = props.title || ''
+  const cleanTitle = raw.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
+  trackClick('View Case: ' + cleanTitle)
+}
 </script>
