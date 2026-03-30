@@ -1,14 +1,26 @@
-// Sends a click event to /api/click for tracking.
-// Fails silently — never blocks navigation.
+// Sends a click event to /api/click and returns the updated count.
 export async function trackClick(label) {
     try {
-        await fetch('/api/click', {
+        const res = await fetch('/api/click', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ label }),
-            keepalive: true,   // ensures request survives if browser navigates away
+            keepalive: true,
         })
+        const data = await res.json()
+        return data.count ?? null   // returns the updated total count
     } catch {
-        // silently ignore network errors
+        return null
+    }
+}
+
+// Fetches the current click count for a label (used on page load).
+export async function fetchClickCount(label) {
+    try {
+        const res = await fetch(`/api/click-count?label=${encodeURIComponent(label)}`)
+        const data = await res.json()
+        return data.count ?? null
+    } catch {
+        return null
     }
 }

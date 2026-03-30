@@ -22,12 +22,15 @@
     </div>
     <a :href="link" target="_blank" class="project-card__link" :id="linkId"
        @click="handleLinkClick">VIEW CASE →</a>
+    <span v-if="clickCount !== null" class="project-card__views">
+      👁 {{ clickCount }} {{ clickCount === 1 ? 'view' : 'views' }}
+    </span>
   </article>
 </template>
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
-import { trackClick } from '@/composables/useClickTrack'
+import { trackClick, fetchClickCount } from '@/composables/useClickTrack'
 
 const props = defineProps({
   id: String, num: String, logo: String, logoAlt: String, logoId: String,
@@ -36,7 +39,8 @@ const props = defineProps({
 })
 
 const splineContainer = ref(null)
-const splineLoaded = ref(false)
+const splineLoaded    = ref(false)
+const clickCount      = ref(null)
 let observer = null
 
 onMounted(() => {
@@ -64,6 +68,10 @@ onMounted(() => {
   if (splineContainer.value) {
     observer.observe(splineContainer.value)
   }
+
+  // Fetch existing click count on mount
+  const label = 'View Case: ' + (props.title || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
+  fetchClickCount(label).then(count => { clickCount.value = count })
 })
 
 onUnmounted(() => {
@@ -71,9 +79,11 @@ onUnmounted(() => {
 })
 
 // Strip HTML from title prop and fire click tracking
-function handleLinkClick() {
+async function handleLinkClick() {
   const raw = props.title || ''
   const cleanTitle = raw.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
-  trackClick('View Case: ' + cleanTitle)
+  const label = 'View Case: ' + cleanTitle
+  const updated = await trackClick(label)
+  if (updated !== null) clickCount.value = updated
 }
 </script>

@@ -124,13 +124,21 @@ export default async function handler(req, res) {
             return res.status(200).json({ ok: true, skipped: 'already_counted' })
         }
 
-        // ── 4. Increment per-link total & overall total ───────────
+        // ── 4. Increment and get count ──────────────────────────
         const hasKV = !!(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN)
-        const safeLabel = label.replace(/[^a-z0-9]/gi, '_').slice(0, 40)
-        const [linkTotal, geo] = await Promise.all([
-            hasKV ? kvIncr(`portfolio:clicks:${safeLabel}`) : null,
+        const safeLabel = label.replace(/[^a-z0-9]/gi, '_').toLowerCase().slice(0, 40)
+
+        let linkTotal = null
+        const [kvTotal, cApiResult, geo] = await Promise.all([
+            hasKV ? kvIncr(`portfolio:clicks:${safeLabel}`) : Promise.resolve(null),
+            // countapi.xyz: free persistent counter, no auth needed
+            fetch(`https://api.countapi.xyz/hit/scott-ux-lab/${safeLabel}`)
+                .then(r => r.ok ? r.json() : null)
+                .catch(() => null),
             getGeoInfo(ip),
         ])
+        // KV takes priority; countapi.xyz is the fallback
+        linkTotal = kvTotal ?? cApiResult?.value ?? null
 
         // ── 5. Device / browser ───────────────────────────────────
         let device  = '🖥️ Desktop'
@@ -182,8 +190,8 @@ export default async function handler(req, res) {
 
         if (!tgRes.ok) console.error('[click] Telegram error:', await tgRes.text())
 
-        console.log(`[click] ✅ ${label} — IP: ${ip}`)
-        return res.status(200).json({ ok: true, total: linkTotal })
+        console.log(`[click] ✅ ${label} — IP: ${ip} — count: ${linkTotal}`)
+        return res.status(200).json({ ok: true, count: linkTotal })
     } catch (err) {
         console.error('[click] error:', err.message)
         return res.status(500).json({ error: 'Internal server error' })
