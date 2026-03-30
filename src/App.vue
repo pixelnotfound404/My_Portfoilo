@@ -32,11 +32,13 @@ import { useScrollProgress } from '@/composables/useScrollProgress'
 import { useActiveNav }      from '@/composables/useActiveNav'
 import { useAnimations }     from '@/composables/useAnimations'
 import { killSplineBadge }   from '@/composables/useSpline'
+import { usePageView }       from '@/composables/usePageView'
 
 onMounted(() => {
   useScrollProgress()
   useActiveNav()
   useAnimations()
   killSplineBadge()
+  usePageView()
 })
 </script>
