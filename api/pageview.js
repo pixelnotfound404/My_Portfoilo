@@ -26,23 +26,6 @@ function isBot(req) {
     return BOT_UA_PATTERN.test(ua)
 }
 
-// Only accept requests that come from the actual portfolio site
-// (Referer or Origin must contain the site's domain or be from Vercel preview)
-function hasValidOrigin(req) {
-    const origin  = req.headers['origin']  || ''
-    const referer = req.headers['referer'] || ''
-    const combined = origin + referer
-
-    // Allow any Vercel deployment of this project, localhost dev, or custom domain
-    return (
-        combined.includes('pixelnotfound404') ||
-        combined.includes('localhost') ||
-        combined.includes('127.0.0.1') ||
-        combined.includes('scott-ux-lab') ||
-        combined.includes('vercel.app')
-    )
-}
-
 // ── Tiny KV REST client (no npm package needed) ──────────────────────────────
 async function kvIncr(key) {
     const url   = process.env.KV_REST_API_URL
@@ -89,10 +72,10 @@ function getClientIP(req) {
     )
 }
 
-// In-memory cooldown — prevents the same IP spamming within 30s
-// (resets on cold start, which is fine for a portfolio)
+// In-memory cooldown — prevents the same IP triggering duplicate notifications
+// within 5 minutes. Resets on cold start (fine for a portfolio).
 const recentIPs = new Map()
-const COOLDOWN_MS = 30 * 1000
+const COOLDOWN_MS = 5 * 60 * 1000  // 5 minutes
 
 export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*')
@@ -118,31 +101,25 @@ export default async function handler(req, res) {
             return res.status(200).json({ ok: true, skipped: 'bot' })
         }
 
-        // ── 2. Validate origin (must come from the portfolio site) ─
-        if (!hasValidOrigin(req)) {
-            console.log(`[pageview] invalid origin skipped — IP: ${ip}`)
-            return res.status(200).json({ ok: true, skipped: 'origin' })
-        }
-
-        // ── 3. In-memory per-IP cooldown (30s) ───────────────────
+        // ── 2. In-memory per-IP cooldown (5 min) ─────────────────
         const lastSeen = recentIPs.get(ip) || 0
         if (Date.now() - lastSeen < COOLDOWN_MS) {
             return res.status(200).json({ ok: true, skipped: 'cooldown' })
         }
         recentIPs.set(ip, Date.now())
 
-        // ── 4. KV daily deduplication (same IP = 1 visit/day) ────
+        // ── 3. KV daily deduplication (same IP = 1 visit/day) ────
         const alreadyCounted = await isAlreadyCounted(ip)
         if (alreadyCounted) {
             return res.status(200).json({ ok: true, skipped: 'already_counted' })
         }
 
-        // ── 5. Increment total ────────────────────────────────────
+        // ── 4. Increment total ────────────────────────────────────
         const hasKV = !!(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN)
         let total = null
         if (hasKV) total = await kvIncr(VISIT_TOTAL_KEY)
 
-        // ── 6. Send Telegram notification ─────────────────────────
+        // ── 5. Send Telegram notification ─────────────────────────
         const countLine = total !== null ? `📊 *Total visits:* ${total}\n` : ''
         const time = new Date().toLocaleString('en-US', {
             timeZone: 'Asia/Bangkok',
