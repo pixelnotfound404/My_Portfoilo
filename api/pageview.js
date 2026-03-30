@@ -1,5 +1,5 @@
 // api/pageview.js — Vercel Serverless Function
-// Counts unique daily visitors and notifies via Telegram.
+// Counts unique daily visitors and notifies via Telegram with geo-location.
 //
 // Required env vars (Vercel Dashboard > Settings > Environment Variables):
 //   TELEGRAM_BOT_TOKEN   — your bot token
@@ -12,8 +12,6 @@
 const VISIT_TOTAL_KEY = 'portfolio:visits:total'
 
 // ── Bot / crawler detection ───────────────────────────────────────────────────
-// NOTE: Never use short strings like 'moz', 'java', 'bot' alone —
-//       they can accidentally match real browser UA strings.
 const BOT_KEYWORDS = [
     'googlebot', 'bingbot', 'yandexbot', 'duckduckbot', 'slurp', 'baiduspider',
     'facebot', 'ia_archiver', 'semrushbot', 'ahrefsbot', 'mj12bot', 'dotbot',
@@ -27,13 +25,33 @@ const BOT_KEYWORDS = [
 
 function isBot(req) {
     const ua = (req.headers['user-agent'] || '').toLowerCase()
-    if (!ua) return true   // no UA at all = bot
+    if (!ua) return true
     const matched = BOT_KEYWORDS.find(k => ua.includes(k))
     if (matched) {
         console.log(`[pageview] bot blocked — keyword: "${matched}" | UA: ${ua.slice(0, 100)}`)
         return true
     }
     return false
+}
+
+// ── IP Geolocation via ip-api.com (free, no key needed, 45 req/min) ──────────
+async function getGeoInfo(ip) {
+    // Skip for private/local IPs
+    if (!ip || ip === 'unknown' || ip.startsWith('192.168') || ip.startsWith('10.') || ip === '127.0.0.1') {
+        return null
+    }
+    try {
+        const res = await fetch(
+            `http://ip-api.com/json/${ip}?fields=status,country,countryCode,regionName,city,isp,org,lat,lon,timezone`,
+            { signal: AbortSignal.timeout(3000) } // 3s timeout so it never hangs
+        )
+        if (!res.ok) return null
+        const data = await res.json()
+        if (data.status !== 'success') return null
+        return data
+    } catch {
+        return null // silently fail — geo is optional
+    }
 }
 
 // ── Tiny KV REST client ───────────────────────────────────────────────────────
@@ -82,6 +100,12 @@ function getClientIP(req) {
     )
 }
 
+// Flag emoji from country code (e.g. "TH" → 🇹🇭)
+function countryFlag(code) {
+    if (!code || code.length !== 2) return '🌍'
+    return [...code.toUpperCase()].map(c => String.fromCodePoint(0x1F1E0 - 65 + c.charCodeAt(0))).join('')
+}
+
 // In-memory cooldown — 5 minutes between notifications from the same IP
 const recentIPs = new Map()
 const COOLDOWN_MS = 5 * 60 * 1000
@@ -104,7 +128,7 @@ export default async function handler(req, res) {
 
     try {
         const ip = getClientIP(req)
-        const ua = req.headers['user-agent'] || ''
+        const ua = req.headers['user-agent'] || 'unknown'
 
         // ── 1. Bot filter ─────────────────────────────────────────
         if (isBot(req)) {
@@ -128,24 +152,55 @@ export default async function handler(req, res) {
             return res.status(200).json({ ok: true, skipped: 'already_counted' })
         }
 
-        // ── 4. Increment total ────────────────────────────────────
-        const hasKV = !!(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN)
-        let total = null
-        if (hasKV) total = await kvIncr(VISIT_TOTAL_KEY)
+        // ── 4. Geo lookup & total counter (run in parallel) ───────
+        const [geo, total] = await Promise.all([
+            getGeoInfo(ip),
+            (async () => {
+                const hasKV = !!(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN)
+                return hasKV ? await kvIncr(VISIT_TOTAL_KEY) : null
+            })(),
+        ])
 
-        // ── 5. Telegram notification ──────────────────────────────
-        const countLine = total !== null ? `📊 *Total visits:* ${total}\n` : ''
+        // ── 5. Detect device type from UA ─────────────────────────
+        let device = '🖥️ Desktop'
+        if (/mobile|android|iphone|ipad|ipod/i.test(ua)) device = '📱 Mobile'
+        else if (/tablet|ipad/i.test(ua)) device = '📟 Tablet'
+
+        let browser = 'Unknown'
+        if (/edg\//i.test(ua))       browser = 'Edge'
+        else if (/opr\//i.test(ua))  browser = 'Opera'
+        else if (/chrome/i.test(ua)) browser = 'Chrome'
+        else if (/safari/i.test(ua)) browser = 'Safari'
+        else if (/firefox/i.test(ua)) browser = 'Firefox'
+
+        // ── 6. Build Telegram message ─────────────────────────────
         const time = new Date().toLocaleString('en-US', {
             timeZone: 'Asia/Bangkok',
             dateStyle: 'medium',
             timeStyle: 'short',
         })
 
+        const countLine = total !== null ? `📊 *Total visits:* ${total}\n` : ''
+
+        let locationBlock = ''
+        if (geo) {
+            const flag = countryFlag(geo.countryCode)
+            locationBlock =
+                `\n📍 *Location*\n` +
+                `${flag} ${geo.city}, ${geo.regionName}, ${geo.country}\n` +
+                `🌐 *ISP:* ${geo.isp || geo.org || 'Unknown'}\n` +
+                `🗺️ *Coords:* [${geo.lat}, ${geo.lon}](https://www.google.com/maps?q=${geo.lat},${geo.lon})\n`
+        }
+
         const text =
-            `👁️ *Someone is viewing your portfolio!*\n\n` +
-            `🌐 *IP:* \`${ip}\`\n` +
-            `🕐 *Time (BKK):* ${time}\n` +
+            `👁️ *Someone is viewing your portfolio!*\n` +
             countLine +
+            `🕐 *Time (BKK):* ${time}\n` +
+            `\n🔌 *Network*\n` +
+            `🌐 *IP:* \`${ip}\`\n` +
+            locationBlock +
+            `\n💻 *Device*\n` +
+            `${device} · ${browser}\n` +
             `\n_Scott UX Lab_`
 
         const tgRes = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
@@ -155,8 +210,8 @@ export default async function handler(req, res) {
         })
 
         if (!tgRes.ok) {
-            const err = await tgRes.text()
-            console.error('[pageview] Telegram error:', err)
+            const errBody = await tgRes.text()
+            console.error('[pageview] Telegram error:', errBody)
         }
 
         return res.status(200).json({ ok: true, total })
