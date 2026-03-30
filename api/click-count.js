@@ -8,7 +8,16 @@ function makeKey(label) {
 }
 
 export default async function handler(req, res) {
-    res.setHeader('Access-Control-Allow-Origin', '*')
+    // ── CORS: restrict to your domain ────────────────────────
+    const ALLOWED_ORIGINS = new Set([
+        'https://scott-ux-lab.vercel.app',
+        'https://www.scott-ux-lab.vercel.app',
+    ])
+    const origin = req.headers.origin || ''
+    if (ALLOWED_ORIGINS.has(origin) || origin.startsWith('http://localhost')) {
+        res.setHeader('Access-Control-Allow-Origin', origin)
+        res.setHeader('Vary', 'Origin')
+    }
     res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS')
 
     if (req.method === 'OPTIONS') return res.status(200).end()
