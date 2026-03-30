@@ -6,6 +6,7 @@ export async function trackClick(label) {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ label }),
+            keepalive: true,   // ensures request survives if browser navigates away
         })
     } catch {
         // silently ignore network errors

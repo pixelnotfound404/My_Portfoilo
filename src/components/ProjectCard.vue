@@ -70,9 +70,10 @@ onUnmounted(() => {
   if (observer) observer.disconnect()
 })
 
-// Strip HTML tags from title and send click event
+// Strip HTML from title prop and fire click tracking
 function handleLinkClick() {
-  const cleanTitle = props.title.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
-  trackClick(`View Case: ${cleanTitle}`)
+  const raw = props.title || ''
+  const cleanTitle = raw.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
+  trackClick('View Case: ' + cleanTitle)
 }
 </script>
