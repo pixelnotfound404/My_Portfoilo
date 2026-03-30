@@ -20,12 +20,14 @@
       </div>
       <p class="project-card__tags">{{ tags }}</p>
     </div>
-    <a :href="link" target="_blank" class="project-card__link" :id="linkId">VIEW CASE →</a>
+    <a :href="link" target="_blank" class="project-card__link" :id="linkId"
+       @click="trackClick('View Case: ' + title.replace(/<[^>]+>/g, ' ').trim())">VIEW CASE →</a>
   </article>
 </template>
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
+import { trackClick } from '@/composables/useClickTrack'
 
 const props = defineProps({
   id: String, num: String, logo: String, logoAlt: String, logoId: String,
