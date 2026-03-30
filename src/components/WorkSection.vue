@@ -42,19 +42,5 @@ const projects = [
     link: 'https://www.figma.com/proto/Ras11j82yKgmRwDEzuEDAb/Project_korrk?page-id=201%3A375&node-id=437-186&viewport=2273%2C798%2C0.45&t=dT9iLUETQ2HJXNSD-1&scaling=scale-down&content-scaling=fixed&starting-point-node-id=1309%3A2320&show-proto-sidebar=1',
     linkId: 'project-link-2',
   },
-  {
-    id: 'project-3',
-    num: '03',
-    logo: '/assets/images/evergreen-logo.png',
-    logoAlt: 'EverGreen Logo',
-    logoId: 'logo-evergreen',
-    splineUrl: 'https://prod.spline.design/lUcUV001z-rB7bct/scene.splinecode',
-    title: 'EVER<br/>GREEN',
-    desc: 'A premium real estate platform designed to help users discover, explore, and invest in properties with confidence. EverGreen features an elegant property listing experience with detailed specs, immersive imagery, and a seamless browsing flow — from featured listings to contact.',
-    pills: ['// ROLE: UX & UI DESIGNER', '// PLATFORM: WEB', '// FREELANCE PROJECT'],
-    tags: 'Web Design · Real Estate · Property Listings · Branding',
-    link: 'https://www.figma.com/make/pS9nULndWUfUaG1HgKGVXV/Website-duplication-request?fullscreen=1&t=ihvqkrRDub1jKS4k-1',
-    linkId: 'project-link-3',
-  },
 ]
 </script>
