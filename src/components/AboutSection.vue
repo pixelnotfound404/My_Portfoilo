@@ -52,9 +52,21 @@ onMounted(() => {
         const viewer = document.createElement('spline-viewer')
         viewer.setAttribute('url', SPLINE_URL)
         viewer.setAttribute('loading-anim-type', 'spinner-small-dark')
+        // Start invisible, fade in smoothly
+        viewer.style.opacity = '0'
+        viewer.style.transition = 'opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1)'
         const placeholder = portraitContainer.value?.querySelector('.spline-placeholder')
         if (placeholder) placeholder.remove()
         portraitContainer.value?.appendChild(viewer)
+        // Fade in when ready
+        let revealed = false
+        function reveal() {
+          if (revealed) return
+          revealed = true
+          viewer.style.opacity = '1'
+        }
+        viewer.addEventListener('load', reveal)
+        setTimeout(reveal, 5000) // fallback
         observer.disconnect()
       }
     })

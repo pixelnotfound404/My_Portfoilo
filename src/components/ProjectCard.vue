@@ -53,10 +53,22 @@ onMounted(() => {
         const viewer = document.createElement('spline-viewer')
         viewer.setAttribute('url', props.splineUrl)
         viewer.setAttribute('loading-anim-type', 'spinner-small-dark')
+        // Start invisible, fade in smoothly
+        viewer.style.opacity = '0'
+        viewer.style.transition = 'opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1)'
         // Remove placeholder and append viewer
         const placeholder = splineContainer.value?.querySelector('.project-card__spline-placeholder')
         if (placeholder) placeholder.remove()
         splineContainer.value?.appendChild(viewer)
+        // Fade in after a brief delay for WebGL to initialize
+        let revealed = false
+        function reveal() {
+          if (revealed) return
+          revealed = true
+          viewer.style.opacity = '1'
+        }
+        viewer.addEventListener('load', reveal)
+        setTimeout(reveal, 5000) // fallback
         observer.disconnect()
       }
     })

@@ -229,6 +229,9 @@ ul {
   position: relative;
   width: 100%;
   height: 100%;
+  /* GPU isolation: prevents Spline WebGL from causing layout thrashing */
+  contain: layout style;
+  will-change: contents;
 }
 
 .spline-placeholder {
@@ -492,6 +495,71 @@ ul {
   position: relative;
   min-height: clamp(340px, 60vh, 700px);
   pointer-events: auto;
+  /* GPU isolation for hero spline */
+  contain: layout style;
+  isolation: isolate;
+}
+
+/* ── Hero Spline placeholder (shown while 3D loads) ── */
+.spline-hero-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.spline-hero-placeholder__grid {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  gap: 1px;
+  opacity: 0.04;
+}
+
+.spline-hero-placeholder__grid span {
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  animation: phGridFade 2.4s ease-in-out infinite alternate;
+}
+
+.spline-hero-placeholder__grid span:nth-child(odd) {
+  animation-delay: -1.2s;
+}
+
+.spline-hero-placeholder__pulse {
+  width: 60px;
+  height: 60px;
+  border: 1.5px solid rgba(224, 255, 0, 0.2);
+  border-top-color: var(--clr-accent);
+  border-radius: 50%;
+  animation: spinRing 1s linear infinite;
+}
+
+.spline-hero-placeholder__label {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--ff-body);
+  font-size: 0.55rem;
+  letter-spacing: 0.25em;
+  color: rgba(224, 255, 0, 0.4);
+  text-transform: uppercase;
+  animation: phLabelPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes phGridFade {
+  0%   { opacity: 0.3; }
+  100% { opacity: 0.8; }
+}
+
+@keyframes phLabelPulse {
+  0%, 100% { opacity: 0.3; }
+  50%      { opacity: 0.8; }
 }
 
 /* Black mask over the Spline "Built with Spline" badge corner */
@@ -507,11 +575,30 @@ ul {
   pointer-events: none;
 }
 
-/* spline-viewer fills its container */
+/* spline-viewer fills its container — fade in when loaded */
 spline-viewer {
   width: 100%;
   height: 100%;
   display: block;
+}
+
+/* Project card spline loading spinner */
+.project-card__spline-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--clr-bg-card);
+}
+
+.spline-spinner {
+  width: 32px;
+  height: 32px;
+  border: 2px solid rgba(224, 255, 0, 0.12);
+  border-top-color: var(--clr-accent);
+  border-radius: 50%;
+  animation: spinRing 0.9s linear infinite;
 }
 
 /* Hero text content — sits above the 3D canvas */
@@ -924,6 +1011,9 @@ spline-viewer {
 /* ── WORK / PROJECTS ─────────────────────────────── */
 .work {
   padding: 8rem 5vw;
+  /* Skip rendering until scrolled into view — massive perf win */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 1200px;
 }
 
 .projects-grid {
@@ -972,6 +1062,9 @@ spline-viewer {
   position: relative;
   min-height: 280px;
   overflow: hidden;
+  /* GPU-isolate each card's WebGL context */
+  contain: layout style;
+  isolation: isolate;
 }
 
 /* spline-viewer fills the card slot */
@@ -1157,6 +1250,8 @@ spline-viewer {
 .services {
   padding: 8rem 5vw;
   background: var(--clr-surface);
+  content-visibility: auto;
+  contain-intrinsic-size: auto 800px;
 }
 
 .services__grid {
@@ -1222,6 +1317,8 @@ spline-viewer {
   position: relative;
   padding: 8rem 5vw;
   overflow: hidden;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 1000px;
 }
 
 .about__bg-text {
@@ -1262,6 +1359,9 @@ spline-viewer {
   position: relative;
   overflow: hidden;
   border: 1px solid var(--clr-border);
+  /* GPU-isolate the about section spline */
+  contain: layout style;
+  isolation: isolate;
 }
 
 /* Spline viewer fills the portrait frame absolutely */
@@ -1342,6 +1442,8 @@ spline-viewer {
   padding: 5rem 5vw;
   border-top: 1px solid var(--clr-border);
   border-bottom: 1px solid var(--clr-border);
+  content-visibility: auto;
+  contain-intrinsic-size: auto 400px;
 }
 
 .trusted__label {
@@ -1382,6 +1484,8 @@ spline-viewer {
   position: relative;
   padding: 10rem 5vw;
   overflow: hidden;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 900px;
 }
 
 .contact__bg-text {

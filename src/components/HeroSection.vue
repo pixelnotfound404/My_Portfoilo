@@ -2,11 +2,16 @@
   <section class="hero" id="hero">
     <div class="hero__bg-text" aria-hidden="true">UX LAB</div>
 
-    <div class="spline-container" id="spline-hero">
-      <spline-viewer
-        url="https://prod.spline.design/lUcUV001z-rB7bct/scene.splinecode"
-        loading-anim-type="spinner-small-dark"
-      />
+    <div class="spline-container" id="spline-hero" ref="splineContainer">
+      <!-- Stylish placeholder while Spline loads -->
+      <div v-if="!splineReady" class="spline-hero-placeholder">
+        <div class="spline-hero-placeholder__grid" aria-hidden="true">
+          <span v-for="n in 16" :key="n"></span>
+        </div>
+        <div class="spline-hero-placeholder__pulse"></div>
+        <span class="spline-hero-placeholder__label">// LOADING 3D</span>
+      </div>
+      <!-- Spline is injected dynamically after the page loader finishes -->
     </div>
 
     <div class="hero__content">
@@ -36,10 +41,23 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
+
+const SPLINE_URL = 'https://prod.spline.design/lUcUV001z-rB7bct/scene.splinecode'
+
+const splineContainer = ref(null)
+const splineReady = ref(false)
+let loaderTimeout = null
 
 onMounted(() => {
-  // Card tilt effect
+  // Wait for the page loader to finish (1800ms) + a small buffer
+  // so the hero entrance animations play smoothly first,
+  // THEN inject the Spline viewer to avoid competing for GPU/CPU
+  loaderTimeout = setTimeout(() => {
+    injectSpline()
+  }, 2400) // 1800ms loader + 600ms for hero animations to settle
+
+  // Card tilt effect (unchanged)
   document.querySelectorAll('.project-card').forEach(card => {
     const spline = card.querySelector('.project-card__spline')
     card.addEventListener('mousemove', e => {
@@ -67,4 +85,37 @@ onMounted(() => {
     line.addEventListener('mouseleave', () => { line.style.transform = 'none' })
   })
 })
+
+onUnmounted(() => {
+  if (loaderTimeout) clearTimeout(loaderTimeout)
+})
+
+function injectSpline() {
+  if (!splineContainer.value) return
+
+  const viewer = document.createElement('spline-viewer')
+  viewer.setAttribute('url', SPLINE_URL)
+  viewer.setAttribute('loading-anim-type', 'spinner-small-dark')
+
+  // Start invisible, fade in when the 3D scene is ready
+  viewer.style.opacity = '0'
+  viewer.style.transition = 'opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1)'
+
+  splineContainer.value.appendChild(viewer)
+
+  // The spline-viewer fires a 'load' event when the scene finishes rendering.
+  // If that doesn't fire within 6s, show it anyway.
+  let revealed = false
+  function reveal() {
+    if (revealed) return
+    revealed = true
+    viewer.style.opacity = '1'
+    splineReady.value = true
+  }
+
+  viewer.addEventListener('load', reveal)
+  // Fallback: if the load event never fires (some Spline versions don't),
+  // reveal after the scene has had time to initialize
+  setTimeout(reveal, 6000)
+}
 </script>
