@@ -1,7 +1,7 @@
 <template>
   <article class="project-card" :id="id">
     <div class="project-card__spline" ref="splineContainer">
-      <!-- Spline is injected only when the card scrolls into view -->
+      <!-- Spline is injected immediately during load screen -->
       <div v-if="!splineLoaded" class="project-card__spline-placeholder">
         <div class="spline-spinner"></div>
       </div>
@@ -29,7 +29,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { trackClick, fetchClickCount } from '@/composables/useClickTrack'
 
 const props = defineProps({
@@ -41,54 +41,47 @@ const props = defineProps({
 const splineContainer = ref(null)
 const splineLoaded    = ref(false)
 const clickCount      = ref(0)
-let observer = null
 
 onMounted(() => {
-  // Use IntersectionObserver to lazy-load the Spline viewer
-  observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting && !splineLoaded.value) {
-        splineLoaded.value = true
-        // Create the spline-viewer element dynamically
-        const viewer = document.createElement('spline-viewer')
-        viewer.setAttribute('url', props.splineUrl)
-        viewer.setAttribute('loading-anim-type', 'spinner-small-dark')
-        // Start invisible, fade in smoothly
-        viewer.style.opacity = '0'
-        viewer.style.transition = 'opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1)'
-        // Remove placeholder and append viewer
-        const placeholder = splineContainer.value?.querySelector('.project-card__spline-placeholder')
-        if (placeholder) placeholder.remove()
-        splineContainer.value?.appendChild(viewer)
-        // Fade in after a brief delay for WebGL to initialize
-        let revealed = false
-        function reveal() {
-          if (revealed) return
-          revealed = true
-          viewer.style.opacity = '1'
-        }
-        viewer.addEventListener('load', reveal)
-        setTimeout(reveal, 5000) // fallback
-        observer.disconnect()
-      }
-    })
-  }, {
-    rootMargin: '200px 0px', // Start loading 200px before it's visible
-    threshold: 0
-  })
-
-  if (splineContainer.value) {
-    observer.observe(splineContainer.value)
-  }
+  // Inject the Spline viewer IMMEDIATELY so it loads behind the loader screen.
+  // The PageLoader will wait for all scenes before revealing the site.
+  injectSpline()
 
   // Fetch existing click count on mount
   const label = 'View Case: ' + (props.title || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
   fetchClickCount(label).then(count => { clickCount.value = count })
 })
 
-onUnmounted(() => {
-  if (observer) observer.disconnect()
-})
+function injectSpline() {
+  if (!splineContainer.value || !props.splineUrl) return
+
+  const viewer = document.createElement('spline-viewer')
+  viewer.setAttribute('url', props.splineUrl)
+  viewer.setAttribute('loading-anim-type', 'spinner-small-dark')
+
+  // Start invisible, fade in when ready
+  viewer.style.opacity = '0'
+  viewer.style.transition = 'opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1)'
+
+  // Remove placeholder and append viewer
+  const placeholder = splineContainer.value?.querySelector('.project-card__spline-placeholder')
+  if (placeholder) placeholder.remove()
+  splineContainer.value?.appendChild(viewer)
+
+  let revealed = false
+  function reveal() {
+    if (revealed) return
+    revealed = true
+    splineLoaded.value = true
+    viewer.style.opacity = '1'
+    // Notify PageLoader that another scene is ready
+    window.dispatchEvent(new CustomEvent('spline-scene-ready', { detail: props.id }))
+  }
+
+  viewer.addEventListener('load', reveal)
+  // Fallback: if the load event never fires, still report ready after 14s
+  setTimeout(reveal, 14000)
+}
 
 // Strip HTML from title prop and fire click tracking
 async function handleLinkClick() {

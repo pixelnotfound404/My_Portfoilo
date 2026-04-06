@@ -1011,9 +1011,6 @@ spline-viewer {
 /* ── WORK / PROJECTS ─────────────────────────────── */
 .work {
   padding: 8rem 5vw;
-  /* Skip rendering until scrolled into view — massive perf win */
-  content-visibility: auto;
-  contain-intrinsic-size: auto 1200px;
 }
 
 .projects-grid {
@@ -1317,8 +1314,6 @@ spline-viewer {
   position: relative;
   padding: 8rem 5vw;
   overflow: hidden;
-  content-visibility: auto;
-  contain-intrinsic-size: auto 1000px;
 }
 
 .about__bg-text {

@@ -41,23 +41,19 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted } from 'vue'
 
 const SPLINE_URL = 'https://prod.spline.design/lUcUV001z-rB7bct/scene.splinecode'
 
 const splineContainer = ref(null)
 const splineReady = ref(false)
-let loaderTimeout = null
 
 onMounted(() => {
-  // Wait for the page loader to finish (1800ms) + a small buffer
-  // so the hero entrance animations play smoothly first,
-  // THEN inject the Spline viewer to avoid competing for GPU/CPU
-  loaderTimeout = setTimeout(() => {
-    injectSpline()
-  }, 2400) // 1800ms loader + 600ms for hero animations to settle
+  // Inject the Spline scene IMMEDIATELY so it loads behind the loader screen.
+  // The PageLoader will stay visible until the scene is ready.
+  injectSpline()
 
-  // Card tilt effect (unchanged)
+  // Card tilt effect
   document.querySelectorAll('.project-card').forEach(card => {
     const spline = card.querySelector('.project-card__spline')
     card.addEventListener('mousemove', e => {
@@ -86,10 +82,6 @@ onMounted(() => {
   })
 })
 
-onUnmounted(() => {
-  if (loaderTimeout) clearTimeout(loaderTimeout)
-})
-
 function injectSpline() {
   if (!splineContainer.value) return
 
@@ -97,25 +89,26 @@ function injectSpline() {
   viewer.setAttribute('url', SPLINE_URL)
   viewer.setAttribute('loading-anim-type', 'spinner-small-dark')
 
-  // Start invisible, fade in when the 3D scene is ready
+  // Start invisible — it will fade in after the loader hides
   viewer.style.opacity = '0'
   viewer.style.transition = 'opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1)'
 
   splineContainer.value.appendChild(viewer)
 
-  // The spline-viewer fires a 'load' event when the scene finishes rendering.
-  // If that doesn't fire within 6s, show it anyway.
-  let revealed = false
-  function reveal() {
-    if (revealed) return
-    revealed = true
+  // When the scene finishes loading, notify the PageLoader to reveal the site
+  let notified = false
+  function onSplineReady() {
+    if (notified) return
+    notified = true
     viewer.style.opacity = '1'
     splineReady.value = true
+    // Dispatch custom event so the PageLoader knows another scene is ready
+    window.dispatchEvent(new CustomEvent('spline-scene-ready', { detail: 'hero' }))
   }
 
-  viewer.addEventListener('load', reveal)
-  // Fallback: if the load event never fires (some Spline versions don't),
-  // reveal after the scene has had time to initialize
-  setTimeout(reveal, 6000)
+  viewer.addEventListener('load', onSplineReady)
+  // Fallback: if the 'load' event never fires (some Spline versions don't),
+  // still signal readiness after 12s
+  setTimeout(onSplineReady, 12000)
 }
 </script>
