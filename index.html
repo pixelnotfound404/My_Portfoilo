@@ -110,6 +110,15 @@
     <div class="loader__percent" id="loader-progress-text">0%</div>
   </div>
 
+  <!-- Instantly remove loader on non-home pages (case studies, etc.) -->
+  <script>
+    if (window.location.pathname !== '/') {
+      var loader = document.getElementById('page-loader');
+      if (loader) loader.remove();
+      document.body.classList.remove('is-loading');
+    }
+  </script>
+
   <div id="app"></div>
   <script type="module" src="/src/main.js"></script>
 

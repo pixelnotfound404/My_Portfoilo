@@ -41,12 +41,14 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 
 const SPLINE_URL = 'https://prod.spline.design/lUcUV001z-rB7bct/scene.splinecode'
 
 const splineContainer = ref(null)
 const splineReady = ref(false)
+let splineViewer = null
+let fallbackTimer = null
 
 onMounted(() => {
   // Inject the Spline scene IMMEDIATELY so it loads behind the loader screen.
@@ -82,12 +84,26 @@ onMounted(() => {
   })
 })
 
+onBeforeUnmount(() => {
+  // Remove Spline viewer from the DOM BEFORE Vue tries to unmount it.
+  // The spline-viewer custom element's shadow DOM / WebGL context causes
+  // a TypeError in Vue's unmountComponent.
+  if (fallbackTimer) clearTimeout(fallbackTimer)
+  if (splineViewer && splineViewer.parentNode) {
+    splineViewer.parentNode.removeChild(splineViewer)
+  }
+  splineViewer = null
+})
+
 function injectSpline() {
   if (!splineContainer.value) return
 
   const viewer = document.createElement('spline-viewer')
   viewer.setAttribute('url', SPLINE_URL)
   viewer.setAttribute('loading-anim-type', 'spinner-small-dark')
+
+  // Keep reference for cleanup
+  splineViewer = viewer
 
   // Start invisible — it will fade in after the loader hides
   viewer.style.opacity = '0'
@@ -109,6 +125,6 @@ function injectSpline() {
   viewer.addEventListener('load', onSplineReady)
   // Fallback: if the 'load' event never fires (some Spline versions don't),
   // still signal readiness after 12s
-  setTimeout(onSplineReady, 12000)
+  fallbackTimer = setTimeout(onSplineReady, 12000)
 }
 </script>
