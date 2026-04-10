@@ -1188,18 +1188,60 @@ spline-viewer {
   font-size: 0.65rem;
   font-weight: 600;
   letter-spacing: 0.2em;
-  border: 1px solid var(--clr-border);
-  color: var(--clr-muted);
+  border: 1px solid var(--clr-accent);
+  color: var(--clr-accent);
   text-decoration: none;
   display: inline-block;
   position: relative;
   z-index: 10;
-  transition: border-color 0.3s, color 0.3s;
+  overflow: hidden;
+  text-transform: uppercase;
+  box-shadow: 0 0 8px rgba(224, 255, 0, 0.15), inset 0 0 8px rgba(224, 255, 0, 0.05);
+  animation: viewCaseGlow 2.5s ease-in-out infinite;
+  transition: color 0.35s var(--ease-out),
+              transform 0.3s var(--ease-out),
+              box-shadow 0.35s var(--ease-out),
+              letter-spacing 0.35s var(--ease-out);
+}
+
+/* Sliding fill sweep */
+.project-card__link::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--clr-accent);
+  transform: translateX(-101%);
+  transition: transform 0.4s var(--ease-out);
+  z-index: -1;
+}
+
+/* Animated arrow indicator */
+.project-card__link::after {
+  content: '';
+  display: inline-block;
+  transition: transform 0.3s var(--ease-out);
 }
 
 .project-card__link:hover {
-  border-color: var(--clr-accent);
-  color: var(--clr-accent);
+  color: var(--clr-bg);
+  transform: translateY(-3px);
+  box-shadow: 0 0 20px rgba(224, 255, 0, 0.4), 0 8px 30px rgba(224, 255, 0, 0.2);
+  letter-spacing: 0.28em;
+  animation: none;
+}
+
+.project-card__link:hover::before {
+  transform: translateX(0);
+}
+
+/* Subtle ambient glow pulse */
+@keyframes viewCaseGlow {
+  0%, 100% {
+    box-shadow: 0 0 8px rgba(224, 255, 0, 0.15), inset 0 0 8px rgba(224, 255, 0, 0.05);
+  }
+  50% {
+    box-shadow: 0 0 16px rgba(224, 255, 0, 0.3), inset 0 0 12px rgba(224, 255, 0, 0.08);
+  }
 }
 
 .project-card__views {
