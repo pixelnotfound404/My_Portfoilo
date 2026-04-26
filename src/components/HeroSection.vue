@@ -41,7 +41,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, onMounted, onBeforeUnmount, onActivated, onDeactivated } from 'vue'
 
 const SPLINE_URL = 'https://prod.spline.design/lUcUV001z-rB7bct/scene.splinecode'
 
@@ -84,10 +84,23 @@ onMounted(() => {
   })
 })
 
+// ── KeepAlive lifecycle: hide/show Spline instead of destroying it ──
+// When navigating to a case study, the spline-viewer is hidden (saves GPU).
+// When coming back, it's instantly shown — no re-download or re-initialization.
+onDeactivated(() => {
+  if (splineViewer) {
+    splineViewer.style.visibility = 'hidden'
+  }
+})
+
+onActivated(() => {
+  if (splineViewer) {
+    splineViewer.style.visibility = 'visible'
+  }
+})
+
+// Final cleanup: only runs when the component is truly destroyed (e.g. full page nav)
 onBeforeUnmount(() => {
-  // Remove Spline viewer from the DOM BEFORE Vue tries to unmount it.
-  // The spline-viewer custom element's shadow DOM / WebGL context causes
-  // a TypeError in Vue's unmountComponent.
   if (fallbackTimer) clearTimeout(fallbackTimer)
   if (splineViewer && splineViewer.parentNode) {
     splineViewer.parentNode.removeChild(splineViewer)

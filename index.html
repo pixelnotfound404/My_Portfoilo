@@ -16,101 +16,308 @@
 
   <!-- Non-render-blocking font loading -->
   <link
-    href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Inter:wght@300;400;500;600&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
     rel="stylesheet" media="print" onload="this.media='all'" />
   <noscript>
     <link
-      href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Inter:wght@300;400;500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
       rel="stylesheet" />
   </noscript>
 
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
-  <!-- Inline critical loader styles so the page doesn't flash white -->
   <style>
-    body {
-      margin: 0;
-      background: #0a0a0a;
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+    :root {
+      --l-bg: #080808;
+      --l-accent: #e0ff00;
+      --l-muted: rgba(255, 255, 255, 0.3);
+      --l-border: rgba(255, 255, 255, 0.06);
+      --l-white: #ffffff;
+      --ff-head: 'Barlow Condensed', sans-serif;
+      --ff-body: 'Inter', sans-serif;
+      --ff-mono: 'JetBrains Mono', 'Consolas', monospace;
     }
 
-    body.is-loading {
-      overflow: hidden;
-    }
+    body { margin:0; background:var(--l-bg); }
+    body.is-loading { overflow:hidden; }
 
+    /* ═══ LOADER ═══ */
     #page-loader {
-      position: fixed;
-      inset: 0;
-      z-index: 99999;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background: #0a0a0a;
+      position: fixed; inset: 0; z-index: 99999;
+      background: var(--l-bg);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--ff-body);
     }
 
-    .loader__logo {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 1.8rem;
-      font-weight: 900;
-      letter-spacing: 0.18em;
-      color: #fff;
+    /* Subtle grid */
+    .l-grid {
+      position: absolute; inset: 0; pointer-events: none;
+      background-image:
+        linear-gradient(rgba(224,255,0,0.012) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(224,255,0,0.012) 1px, transparent 1px);
+      background-size: 60px 60px;
     }
 
-    .loader__logo span {
-      color: #e0ff00;
+    /* Corner brackets */
+    .l-br { position:absolute; width:18px; height:18px; z-index:2; }
+    .l-br::before,.l-br::after { content:''; position:absolute; background:var(--l-accent); }
+    .l-br--tl { top:16px;left:16px; }
+    .l-br--tl::before { top:0;left:0;width:18px;height:1px; }
+    .l-br--tl::after  { top:0;left:0;width:1px;height:18px; }
+    .l-br--tr { top:16px;right:16px; }
+    .l-br--tr::before { top:0;right:0;width:18px;height:1px; }
+    .l-br--tr::after  { top:0;right:0;width:1px;height:18px; }
+    .l-br--bl { bottom:16px;left:16px; }
+    .l-br--bl::before { bottom:0;left:0;width:18px;height:1px; }
+    .l-br--bl::after  { bottom:0;left:0;width:1px;height:18px; }
+    .l-br--br { bottom:16px;right:16px; }
+    .l-br--br::before { bottom:0;right:0;width:18px;height:1px; }
+    .l-br--br::after  { bottom:0;right:0;width:1px;height:18px; }
+
+    /* ═══ CENTER CARD ═══ */
+    .l-card {
+      position: relative; z-index: 3;
+      display: flex; align-items: center; gap: 3.5rem;
+      padding: 2.5rem 3.5rem;
+      border: 1px solid var(--l-border);
+      background: rgba(255,255,255,0.01);
+      max-width: 720px;
+      opacity: 0; animation: cardIn 0.6s ease 0.2s forwards;
+    }
+    @keyframes cardIn {
+      from { opacity:0; transform:translateY(12px); }
+      to   { opacity:1; transform:translateY(0); }
     }
 
-    .loader__status {
-      margin-top: 1rem;
-      font-family: 'Inter', sans-serif;
-      font-size: 0.7rem;
-      font-weight: 400;
-      letter-spacing: 0.2em;
-      color: rgba(255,255,255,0.35);
-      text-transform: uppercase;
+    /* Photo */
+    .l-photo {
+      position: relative; flex-shrink: 0;
+      width: 140px; height: 185px;
+    }
+    .l-photo::before {
+      content:''; position:absolute; inset:-5px;
+      border: 1px solid rgba(224,255,0,0.15);
+      animation: fPulse 3s ease-in-out infinite;
+    }
+    @keyframes fPulse {
+      0%,100% { border-color:rgba(224,255,0,0.1); }
+      50%     { border-color:rgba(224,255,0,0.3); }
+    }
+    .l-photo img {
+      width:100%; height:100%;
+      object-fit:cover; object-position:top center;
+      filter: grayscale(0.5) brightness(0.9);
+      transition: filter 1.5s ease;
+    }
+    .l-photo img.on { filter: grayscale(0) brightness(1); }
+    .l-photo-tag {
+      position:absolute; bottom:0; left:0; right:0;
+      padding: 3px 6px;
+      background: rgba(8,8,8,0.85);
+      border-top: 1px solid rgba(224,255,0,0.2);
+      font-family: var(--ff-mono); font-size: 0.42rem;
+      color: var(--l-accent); letter-spacing:0.08em;
+      display:flex; justify-content:space-between;
     }
 
-    .loader__progress {
-      margin-top: 1.2rem;
-      width: 160px;
-      height: 2px;
-      background: rgba(255,255,255,0.08);
-      border-radius: 2px;
-      overflow: hidden;
-      position: relative;
+    /* Info */
+    .l-info { display:flex; flex-direction:column; gap:0.6rem; }
+
+    .l-name {
+      font-family: var(--ff-head);
+      font-size: 2.4rem; font-weight:900;
+      letter-spacing: 0.1em; color:var(--l-white);
+      text-transform:uppercase; line-height:1;
+    }
+    .l-role {
+      font-family: var(--ff-mono);
+      font-size: 0.6rem; color:var(--l-accent);
+      letter-spacing: 0.15em; text-transform:uppercase;
+    }
+    .l-sep {
+      width: 40px; height: 1px;
+      background: var(--l-border); margin: 0.2rem 0;
+    }
+    .l-desc {
+      font-family: var(--ff-body);
+      font-size: 0.68rem; color:var(--l-muted);
+      line-height: 1.7; letter-spacing:0.02em;
+      max-width: 300px;
     }
 
-    .loader__progress-fill {
-      height: 100%;
-      width: 0%;
-      background: #e0ff00;
-      border-radius: 2px;
+    /* Terminal mini */
+    .l-term {
+      font-family: var(--ff-mono);
+      font-size: 0.52rem; line-height:1.8;
+      color: var(--l-muted); letter-spacing:0.03em;
+      margin-top: 0.3rem;
+    }
+    .l-term-line {
+      opacity:0; transform:translateY(4px);
+      white-space:nowrap;
+    }
+    .l-term-line.show { animation: lIn 0.3s ease forwards; }
+    @keyframes lIn { to { opacity:1; transform:translateY(0); } }
+    .l-term-line .a { color:var(--l-accent); }
+    .l-term-line .w { color:var(--l-white); }
+    .l-term-line .d { color:rgba(255,255,255,0.15); }
+
+    /* ═══ BOTTOM BAR ═══ */
+    .l-bottom {
+      position:absolute; bottom:0; left:0; right:0;
+      display:flex; align-items:center; gap:1rem;
+      padding: 1rem 2.5rem;
+      border-top: 1px solid var(--l-border);
+      z-index:3;
+    }
+    .l-bar {
+      flex:1; height:1px; max-width:300px;
+      background: rgba(255,255,255,0.05);
+      overflow:hidden; position:relative;
+    }
+    .l-fill {
+      height:100%; width:0%;
+      background:var(--l-accent);
       transition: width 0.3s ease;
+      box-shadow: 0 0 6px rgba(224,255,0,0.2);
+    }
+    .l-pct {
+      font-family:var(--ff-head);
+      font-size:1rem; font-weight:700;
+      letter-spacing:0.1em; color:var(--l-accent);
+      min-width:2.5rem;
+    }
+    .l-clock {
+      margin-left:auto;
+      font-family:var(--ff-mono);
+      font-size:0.55rem; color:rgba(255,255,255,0.2);
+      letter-spacing:0.1em;
     }
 
-    .loader__percent {
-      margin-top: 0.8rem;
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 1.1rem;
-      font-weight: 700;
-      letter-spacing: 0.15em;
-      color: #e0ff00;
+    /* ═══ TOP LABEL ═══ */
+    .l-top {
+      position:absolute; top:0; left:0; right:0;
+      display:flex; align-items:center; justify-content:space-between;
+      padding: 1rem 2.5rem;
+      border-bottom: 1px solid var(--l-border);
+      z-index:3;
+    }
+    .l-brand {
+      font-family:var(--ff-head);
+      font-size:0.8rem; font-weight:700;
+      letter-spacing:0.18em; color:var(--l-white);
+      text-transform:uppercase;
+    }
+    .l-brand span { color:var(--l-accent); }
+    .l-sys {
+      font-family:var(--ff-mono);
+      font-size:0.5rem; color:rgba(255,255,255,0.2);
+      letter-spacing:0.1em;
+    }
+    .l-sys .blink { animation: blink 1s step-end infinite; }
+    @keyframes blink { 50%{opacity:0;} }
+
+    /* ═══ MOBILE ═══ */
+    @media (max-width: 640px) {
+      .l-card {
+        flex-direction:column; gap:1.5rem;
+        padding:2rem; text-align:center;
+        margin: 0 1.5rem;
+      }
+      .l-photo { width:100px; height:130px; }
+      .l-info { align-items:center; }
+      .l-desc { text-align:center; }
+      .l-br { display:none; }
+      .l-name { font-size:1.8rem; }
     }
   </style>
 </head>
 
 <body class="is-loading">
-  <!-- Loader is in the raw HTML so it shows instantly, before Vue hydrates -->
   <div id="page-loader" aria-hidden="true">
-    <div class="loader__logo">✦ SCOTT <span>UX</span> &amp; UI LAB</div>
-    <div class="loader__status" id="loader-status-text">loading experience</div>
-    <div class="loader__progress">
-      <div class="loader__progress-fill" id="loader-progress-fill"></div>
+    <div class="l-grid"></div>
+    <div class="l-br l-br--tl"></div>
+    <div class="l-br l-br--tr"></div>
+    <div class="l-br l-br--bl"></div>
+    <div class="l-br l-br--br"></div>
+
+    <!-- Top -->
+    <div class="l-top">
+      <div class="l-brand">✦ SCOTT <span>UX</span> &amp; UI LAB</div>
+      <div class="l-sys">SYS.BOOT <span class="blink">▮</span></div>
     </div>
-    <div class="loader__percent" id="loader-progress-text">0%</div>
+
+    <!-- Center card -->
+    <div class="l-card">
+      <div class="l-info">
+        <div class="l-name">SCOTT</div>
+        <div class="l-role">// Experience Designer</div>
+        <div class="l-sep"></div>
+        <div class="l-desc">
+          Crafting bold, intuitive digital experiences.<br>
+          Turning complex problems into clean solutions.
+        </div>
+        <div class="l-term">
+          <div class="l-term-line" data-delay="500">
+            <span class="d">&gt;</span> <span class="a">STACK</span> <span class="w">Figma · Prototype · Research</span>
+          </div>
+          <div class="l-term-line" data-delay="1000">
+            <span class="d">&gt;</span> <span class="a">STATUS</span> all_systems_ready <span class="a">✓</span>
+          </div>
+          <div class="l-term-line" data-delay="1500">
+            <span class="d">&gt;</span> <span class="a">LAUNCH</span> portfolio<span class="blink">▮</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="l-photo">
+        <img
+          src="/assets/images/profile/490446589_3202793183192845_5020337764931861736_n.jpg"
+          alt="Scott" id="loader-photo" draggable="false" />
+        <div class="l-photo-tag">
+          <span>ID:VERIFIED</span>
+          <span>UX.DESIGNER</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom -->
+    <div class="l-bottom">
+      <div class="l-bar">
+        <div class="l-fill" id="loader-progress-fill"></div>
+      </div>
+      <div class="l-pct" id="loader-progress-text">0%</div>
+      <div class="l-clock" id="loader-clock"></div>
+    </div>
   </div>
 
-  <!-- Instantly remove loader on non-home pages (case studies, etc.) -->
+  <script>
+    (function() {
+      // Terminal lines
+      document.querySelectorAll('.l-term-line').forEach(function(el) {
+        var d = parseInt(el.getAttribute('data-delay') || '0', 10);
+        setTimeout(function() { el.classList.add('show'); }, d);
+      });
+      // Photo color reveal
+      setTimeout(function() {
+        var img = document.getElementById('loader-photo');
+        if (img) img.classList.add('on');
+      }, 1200);
+      // Clock
+      var c = document.getElementById('loader-clock');
+      function tick() {
+        if (!c) return;
+        var n = new Date();
+        c.textContent = [n.getHours(),n.getMinutes(),n.getSeconds()]
+          .map(function(v){return String(v).padStart(2,'0')}).join(':');
+      }
+      tick(); setInterval(tick, 1000);
+    })();
+  </script>
+
+  <!-- Skip loader on non-home pages -->
   <script>
     if (window.location.pathname !== '/') {
       var loader = document.getElementById('page-loader');
@@ -121,8 +328,6 @@
 
   <div id="app"></div>
   <script type="module" src="/src/main.js"></script>
-
-  <!-- Load Spline viewer immediately so the 3D scene downloads behind the loader -->
   <script type="module" src="https://unpkg.com/@splinetool/viewer@1.9.28/build/spline-viewer.js"></script>
 </body>
 

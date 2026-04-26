@@ -14,6 +14,9 @@
 </template>
 
 <script setup>
+// Explicit name so <KeepAlive include="['HomePage']"> can match this component
+defineOptions({ name: 'HomePage' })
+
 import PageLoader    from '@/components/PageLoader.vue'
 import NavBar       from '@/components/NavBar.vue'
 import HeroSection  from '@/components/HeroSection.vue'
@@ -25,7 +28,7 @@ import TrustedSection from '@/components/TrustedSection.vue'
 import ContactSection from '@/components/ContactSection.vue'
 import AppFooter    from '@/components/AppFooter.vue'
 
-import { onMounted } from 'vue'
+import { onMounted, onActivated } from 'vue'
 import { useScrollProgress } from '@/composables/useScrollProgress'
 import { useActiveNav }      from '@/composables/useActiveNav'
 import { useAnimations }     from '@/composables/useAnimations'
@@ -39,4 +42,11 @@ onMounted(() => {
   killSplineBadge()
   usePageView()
 })
+
+// When returning from a case study (KeepAlive reactivation),
+// re-run the badge killer since Spline viewers are still alive
+onActivated(() => {
+  killSplineBadge()
+})
 </script>
+

@@ -31,7 +31,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, onMounted, onBeforeUnmount, onActivated, onDeactivated } from 'vue'
 import { useRouter } from 'vue-router'
 import { trackClick, fetchClickCount } from '@/composables/useClickTrack'
 
@@ -60,6 +60,16 @@ onMounted(() => {
   fetchClickCount(label).then(count => { clickCount.value = count })
 })
 
+// ── KeepAlive lifecycle: hide/show Spline instead of destroying it ──
+onDeactivated(() => {
+  if (splineViewer) splineViewer.style.visibility = 'hidden'
+})
+
+onActivated(() => {
+  if (splineViewer) splineViewer.style.visibility = 'visible'
+})
+
+// Final cleanup: only runs when the component is truly destroyed
 onBeforeUnmount(() => {
   if (fallbackTimer) clearTimeout(fallbackTimer)
   if (splineViewer && splineViewer.parentNode) {
@@ -102,21 +112,10 @@ function injectSpline() {
   fallbackTimer = setTimeout(reveal, 14000)
 }
 
-// For internal route links: nuke ALL spline viewers first, THEN navigate.
-// This prevents the TypeError in Vue's unmount when it encounters Spline's shadow DOM.
-async function handleRouteClick() {
-  // Fire-and-forget analytics
+// For internal route links: navigate via router.
+// With KeepAlive, HomePage stays alive — no unmount crash to worry about.
+function handleRouteClick() {
   fireClickTracking()
-
-  // Remove EVERY spline-viewer from the document before Vue tries to unmount
-  document.querySelectorAll('spline-viewer').forEach(el => {
-    el.parentNode?.removeChild(el)
-  })
-
-  // Small delay to let the DOM settle after removing Spline elements
-  await new Promise(r => setTimeout(r, 50))
-
-  // Now navigate — Vue can safely unmount the now-clean component tree
   router.push(props.link)
 }
 

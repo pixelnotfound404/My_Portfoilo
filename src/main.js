@@ -19,3 +19,18 @@ router.onError((err) => {
 
 
 app.mount('#app')
+
+// ── Register Spline asset cache service worker ──
+// Caches .splinecode files after first download so revisits are instant.
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker
+      .register('/spline-sw.js', { scope: '/' })
+      .then(reg => {
+        console.log('[SplineSW] Registered — scope:', reg.scope)
+      })
+      .catch(err => {
+        console.warn('[SplineSW] Registration failed:', err)
+      })
+  })
+}
