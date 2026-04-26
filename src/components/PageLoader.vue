@@ -32,7 +32,7 @@ onMounted(() => {
 
   // ── Reveal logic ──
   const mountedAt = performance.now()
-  const MIN_DISPLAY_MS = 1500 // don't flash the loader too briefly
+  const MIN_DISPLAY_MS = 4000 // give the terminal boot sequence time to play
   let revealed = false
 
   function revealSite() {
@@ -73,7 +73,7 @@ onMounted(() => {
   }
 
   // Listen for the custom event from HeroSection when the Spline scene is ready
-  window.addEventListener('spline-hero-ready', revealSite)
+  window.addEventListener('spline-scene-ready', revealSite)
 
   // Fallback: if Spline takes too long (slow network / blocked), reveal after 15s
   const fallbackTimer = setTimeout(revealSite, 15000)
@@ -81,7 +81,7 @@ onMounted(() => {
   cleanupFn = () => {
     clearInterval(progressInterval)
     clearTimeout(fallbackTimer)
-    window.removeEventListener('spline-hero-ready', revealSite)
+    window.removeEventListener('spline-scene-ready', revealSite)
   }
 })
 

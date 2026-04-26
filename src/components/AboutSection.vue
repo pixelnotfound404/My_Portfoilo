@@ -30,7 +30,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onActivated, onDeactivated } from 'vue'
 
 const SPLINE_URL = 'https://prod.spline.design/yQ8yalre4fRtZ5yC/scene.splinecode'
 
@@ -42,6 +42,7 @@ const stats = [
 
 const portraitContainer = ref(null)
 const splineLoaded = ref(false)
+let splineViewerEl = null
 
 onMounted(() => {
   // Inject the Spline viewer IMMEDIATELY so it loads behind the loader screen.
@@ -64,6 +65,9 @@ function injectSpline() {
   if (placeholder) placeholder.remove()
   portraitContainer.value?.appendChild(viewer)
 
+  // Keep reference for KeepAlive hide/show
+  splineViewerEl = viewer
+
   let revealed = false
   function reveal() {
     if (revealed) return
@@ -78,6 +82,15 @@ function injectSpline() {
   // Fallback: if the load event never fires, still report ready after 14s
   setTimeout(reveal, 14000)
 }
+
+// ── KeepAlive lifecycle: hide/show Spline instead of destroying it ──
+onDeactivated(() => {
+  if (splineViewerEl) splineViewerEl.style.visibility = 'hidden'
+})
+
+onActivated(() => {
+  if (splineViewerEl) splineViewerEl.style.visibility = 'visible'
+})
 
 function scrollToContact() {
   const target = document.getElementById('contact')
