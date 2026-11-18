@@ -5,9 +5,10 @@
     <HeroSection />
     <MarqueeSection />
     <WorkSection />
-    <ServicesSection />
+    <ExperienceSection />
+    <EducationSection />
+    <ChallengesSection />
     <AboutSection />
-    <TrustedSection />
     <ContactSection />
   </main>
   <AppFooter />
@@ -22,9 +23,10 @@ import NavBar       from '@/components/NavBar.vue'
 import HeroSection  from '@/components/HeroSection.vue'
 import MarqueeSection from '@/components/MarqueeSection.vue'
 import WorkSection  from '@/components/WorkSection.vue'
-import ServicesSection from '@/components/ServicesSection.vue'
+import ExperienceSection from '@/components/ExperienceSection.vue'
+import EducationSection from '@/components/EducationSection.vue'
+import ChallengesSection from '@/components/ChallengesSection.vue'
 import AboutSection from '@/components/AboutSection.vue'
-import TrustedSection from '@/components/TrustedSection.vue'
 import ContactSection from '@/components/ContactSection.vue'
 import AppFooter    from '@/components/AppFooter.vue'
 

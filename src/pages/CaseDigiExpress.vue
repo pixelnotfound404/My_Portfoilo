@@ -16,6 +16,7 @@
         <p class="cs-hero__subtitle">A cross-border shopping & delivery app helping users in Cambodia buy products from China and receive them locally.</p>
         <div class="cs-hero__pills">
           <span class="cs-pill">LEAD UX & UI</span>
+          <span class="cs-pill">QA TESTING</span>
           <span class="cs-pill">MOBILE APP</span>
           <span class="cs-pill">TEAM OF 3</span>
           <span class="cs-pill">5–7 MONTHS</span>
@@ -210,11 +211,64 @@
       </div>
     </section>
 
-    <!-- ── MY ROLE & TOOLS ── -->
-    <section class="cs-section" id="cs-role">
+    <!-- ── QA & TESTING ── -->
+    <section class="cs-section" id="cs-qa">
       <div class="cs-section__grid">
         <div class="cs-section__label">
           <span class="cs-tag">// 07</span>
+          <h2 class="cs-heading">QA &<br/>TESTING</h2>
+        </div>
+        <div class="cs-section__body">
+          <p class="cs-text">
+            Beyond designing the interface, I owned the entire QA process — manually testing every flow, tracking bugs, and ensuring the app met Play Store standards before launch.
+          </p>
+
+          <div class="cs-qa-grid">
+            <div class="cs-qa-card">
+              <span class="cs-qa-card__icon">🧪</span>
+              <h3 class="cs-qa-card__title">Manual Functional Testing</h3>
+              <p class="cs-qa-card__desc">Tested every user flow end-to-end: ordering, payment, tracking, notifications. Covered edge cases like empty states, network errors, and invalid inputs.</p>
+            </div>
+            <div class="cs-qa-card">
+              <span class="cs-qa-card__icon">📱</span>
+              <h3 class="cs-qa-card__title">Device & Compatibility</h3>
+              <p class="cs-qa-card__desc">Tested across 2 Android devices with different screen sizes and OS versions to ensure consistent behavior and responsive layouts.</p>
+            </div>
+            <div class="cs-qa-card">
+              <span class="cs-qa-card__icon">🚀</span>
+              <h3 class="cs-qa-card__title">Play Store QA & Launch</h3>
+              <p class="cs-qa-card__desc">Handled pre-launch checklist: APK compliance, metadata review, screenshot preparation, content rating, and Google Play policy checks before successful submission.</p>
+            </div>
+          </div>
+
+          <div class="cs-qa-stats">
+            <div class="cs-stat">
+              <span class="cs-stat__num">50+</span>
+              <span class="cs-stat__label">Bugs Reported & Fixed</span>
+            </div>
+            <div class="cs-stat">
+              <span class="cs-stat__num">15+</span>
+              <span class="cs-stat__label">User Flows Tested</span>
+            </div>
+            <div class="cs-stat">
+              <span class="cs-stat__num">2</span>
+              <span class="cs-stat__label">Devices Tested</span>
+            </div>
+          </div>
+
+          <div class="cs-insight-box">
+            <span class="cs-insight-box__label">// KEY INSIGHT</span>
+            <p class="cs-insight-box__text">QA wasn't a separate phase — it ran parallel with development. Every design I handed off, I personally tested in the build. This tight feedback loop cut rework time significantly.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── MY ROLE & TOOLS ── -->
+    <section class="cs-section cs-section--dark" id="cs-role">
+      <div class="cs-section__grid">
+        <div class="cs-section__label">
+          <span class="cs-tag">// 08</span>
           <h2 class="cs-heading">MY ROLE<br/>& TOOLS</h2>
         </div>
         <div class="cs-section__body">
@@ -228,12 +282,15 @@
                 <li><span class="cs-role-list__icon">🎨</span> Built the UI design system</li>
                 <li><span class="cs-role-list__icon">📱</span> Designed all mobile screens</li>
                 <li><span class="cs-role-list__icon">🔁</span> Iterated based on feedback</li>
+                <li><span class="cs-role-list__icon">🧪</span> Led QA testing across all flows</li>
+                <li><span class="cs-role-list__icon">🐛</span> Tracked & resolved 50+ bugs</li>
+                <li><span class="cs-role-list__icon">🚀</span> Managed Play Store submission</li>
               </ul>
             </div>
             <div class="cs-role-block">
               <h3 class="cs-role-block__title">TEAM</h3>
               <ul class="cs-role-list">
-                <li><span class="cs-role-list__icon">👨‍🎨</span> Sam Sokunthea — UX/UI Designer</li>
+                <li><span class="cs-role-list__icon">👨‍🎨</span> Sam Sokunthea — UX/UI Designer & QA</li>
                 <li><span class="cs-role-list__icon">👨‍💻</span> Yong Bungleng — Flutter (Frontend)</li>
                 <li><span class="cs-role-list__icon">👨‍💻</span> Koy Yutraboth — Laravel (Backend)</li>
               </ul>
@@ -247,6 +304,8 @@
                 <span class="cs-tool">Laravel</span>
                 <span class="cs-tool">AWS</span>
                 <span class="cs-tool">Microsoft SQL Server</span>
+                <span class="cs-tool">Manual Testing</span>
+                <span class="cs-tool">Google Play Console</span>
               </div>
             </div>
           </div>
@@ -269,10 +328,15 @@
                 <span class="cs-timeline__label">Development</span>
                 <span class="cs-timeline__duration">2–3 months</span>
               </div>
-              <div class="cs-timeline__phase" style="--phase-width: 20%">
+              <div class="cs-timeline__phase" style="--phase-width: 15%">
                 <div class="cs-timeline__bar"></div>
-                <span class="cs-timeline__label">Testing & Launch</span>
-                <span class="cs-timeline__duration">2–3 weeks</span>
+                <span class="cs-timeline__label">QA Testing</span>
+                <span class="cs-timeline__duration">3–4 weeks</span>
+              </div>
+              <div class="cs-timeline__phase" style="--phase-width: 10%">
+                <div class="cs-timeline__bar"></div>
+                <span class="cs-timeline__label">Launch</span>
+                <span class="cs-timeline__duration">1–2 weeks</span>
               </div>
             </div>
           </div>
@@ -284,7 +348,7 @@
     <section class="cs-section cs-section--dark" id="cs-results">
       <div class="cs-section__grid">
         <div class="cs-section__label">
-          <span class="cs-tag">// 08</span>
+          <span class="cs-tag">// 09</span>
           <h2 class="cs-heading">RESULTS &<br/>LEARNINGS</h2>
         </div>
         <div class="cs-section__body">
@@ -348,26 +412,24 @@
       <div class="cs-cta">
         <span class="cs-tag">// TRY IT YOURSELF</span>
         <h2 class="cs-cta__title">VIEW THE<br/><span class="cs-cta__title--accent">PROTOTYPE</span></h2>
-        <p class="cs-cta__desc">Experience the full interactive prototype built in Figma.</p>
-        <a href="https://www.figma.com/proto/loR9c6xd0fRd7mNWi3WshE/DIGI-Express?page-id=5918%3A17286&node-id=5972-18236&p=f&viewport=1769%2C-126%2C0.87&t=mo66sejkXtz3IxF1-1&scaling=scale-down&content-scaling=fixed&starting-point-node-id=5972%3A18236&show-proto-sidebar=1"
-           target="_blank" class="cs-cta__btn" id="cs-figma-link">
-          OPEN IN FIGMA ↗
-        </a>
+        <p class="cs-cta__desc">Experience the full interactive prototype built in Figma — or download the live app on Google Play.</p>
+        <div class="cs-cta__btns">
+          <a href="https://www.figma.com/proto/loR9c6xd0fRd7mNWi3WshE/DIGI-Express?page-id=5918%3A17286&node-id=5972-18236&p=f&viewport=1769%2C-126%2C0.87&t=mo66sejkXtz3IxF1-1&scaling=scale-down&content-scaling=fixed&starting-point-node-id=5972%3A18236&show-proto-sidebar=1"
+             target="_blank" class="cs-cta__btn" id="cs-figma-link">
+            OPEN IN FIGMA ↗
+          </a>
+          <a href="https://play.google.com/store/apps/details?id=com.excellence.digi_express"
+             target="_blank" rel="noopener noreferrer" class="cs-cta__btn cs-cta__btn--store" id="cs-playstore-link">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0" aria-hidden="true"><path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 01-.61-.92V2.734a1 1 0 01.609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.199a1 1 0 010 1.984L15.396 12l2.302-2.302zM5.864 3.658L16.8 9.99l-2.302 2.302-8.635-8.635z"/></svg>
+            GET ON PLAY STORE ↗
+          </a>
+        </div>
       </div>
-    </section>
-
-    <!-- ── NEXT PROJECT ── -->
-    <section class="cs-next">
-      <span class="cs-tag">// NEXT PROJECT</span>
-      <router-link to="/case/kork-app" class="cs-next__link" id="cs-next-project">
-        <span class="cs-next__title">KORK APP</span>
-        <span class="cs-next__arrow">→</span>
-      </router-link>
     </section>
 
     <!-- ── FOOTER ── -->
     <footer class="footer">
-      <span class="footer__logo"><span style="color:#e0ff00;text-shadow:0 0 8px #e0ff00">✦</span> SCOTT UX &amp; UI LAB</span>
+      <span class="footer__logo"><span style="color:#60a5fa;text-shadow:0 0 8px #60a5fa">✦</span> SAM SOKUNTHEA</span>
       <span class="footer__copy">© 2026 — ALL RIGHTS RESERVED</span>
       <span class="footer__loc">BASED GLOBALLY</span>
     </footer>
@@ -391,7 +453,7 @@ onMounted(() => {
     })
   }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' })
 
-  document.querySelectorAll('.cs-section, .cs-pain-card, .cs-method, .cs-solution-card, .cs-result-card, .cs-learning, .cs-stat').forEach(el => {
+  document.querySelectorAll('.cs-section, .cs-pain-card, .cs-method, .cs-solution-card, .cs-result-card, .cs-learning, .cs-stat, .cs-qa-card').forEach(el => {
     observer.observe(el)
   })
 })

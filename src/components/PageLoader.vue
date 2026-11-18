@@ -17,7 +17,7 @@ onMounted(() => {
   if (!loader) return
 
   // Pre-split hero headline words while loader is still visible
-  document.querySelectorAll('.hero__headline .hero__line').forEach(splitWords)
+  document.querySelectorAll('.hero-card__name-line').forEach(splitWords)
   document.querySelectorAll('.section-title').forEach(splitWords)
 
   // ── Simulated progress bar (eases toward 90%, waits for Spline) ──
@@ -64,7 +64,7 @@ onMounted(() => {
         if (hero) hero.classList.add('hero--ready')
 
         setTimeout(() => {
-          document.querySelectorAll('.hero__headline .hero__line').forEach(l => {
+          document.querySelectorAll('.hero-card__name-line').forEach(l => {
             l.classList.add('words-visible')
           })
         }, 200)

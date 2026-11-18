@@ -3,10 +3,23 @@
 
 <head>
   <meta charset="UTF-8" />
+  <!-- Theme init: set data-theme BEFORE any CSS to prevent flash -->
+  <script>
+    (function(){
+      var t = localStorage.getItem('theme') || 'dark';
+      // Force dark on color-scheme change (v2 migration)
+      if (!localStorage.getItem('theme-v2')) {
+        t = 'dark';
+        localStorage.setItem('theme', 'dark');
+        localStorage.setItem('theme-v2', '1');
+      }
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SCOTT UX &amp; UI LAB — Experience Design Studio</title>
+  <title>Sam Sokunthea — UX/UI Designer &amp; QA Tester</title>
   <meta name="description"
-    content="Scott UX Lab — A UX design studio crafting bold, intuitive digital experiences for forward-thinking teams." />
+    content="Sam Sokunthea — UX/UI designer & QA tester crafting intuitive digital experiences and shipping tested apps to the Play Store." />
 
   <!-- Preconnect to critical origins -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -31,13 +44,22 @@
 
     :root {
       --l-bg: #080808;
-      --l-accent: #e0ff00;
+      --l-accent: #60a5fa;
       --l-muted: rgba(255, 255, 255, 0.3);
       --l-border: rgba(255, 255, 255, 0.06);
       --l-white: #ffffff;
       --ff-head: 'Barlow Condensed', sans-serif;
       --ff-body: 'Inter', sans-serif;
       --ff-mono: 'JetBrains Mono', 'Consolas', monospace;
+    }
+
+    /* Light mode loader overrides */
+    [data-theme="light"] {
+      --l-bg: #ffffff;
+      --l-accent: #3b82f6;
+      --l-muted: rgba(0, 0, 0, 0.45);
+      --l-border: rgba(0, 0, 0, 0.1);
+      --l-white: #0a0a0a;
     }
 
     body { margin:0; background:var(--l-bg); }
@@ -55,8 +77,8 @@
     .l-grid {
       position: absolute; inset: 0; pointer-events: none;
       background-image:
-        linear-gradient(rgba(224,255,0,0.012) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(224,255,0,0.012) 1px, transparent 1px);
+        linear-gradient(rgba(96,165,250,0.012) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(96,165,250,0.012) 1px, transparent 1px);
       background-size: 60px 60px;
     }
 
@@ -98,12 +120,12 @@
     }
     .l-photo::before {
       content:''; position:absolute; inset:-5px;
-      border: 1px solid rgba(224,255,0,0.15);
+      border: 1px solid rgba(96,165,250,0.15);
       animation: fPulse 3s ease-in-out infinite;
     }
     @keyframes fPulse {
-      0%,100% { border-color:rgba(224,255,0,0.1); }
-      50%     { border-color:rgba(224,255,0,0.3); }
+      0%,100% { border-color:rgba(96,165,250,0.1); }
+      50%     { border-color:rgba(96,165,250,0.3); }
     }
     .l-photo img {
       width:100%; height:100%;
@@ -116,7 +138,7 @@
       position:absolute; bottom:0; left:0; right:0;
       padding: 3px 6px;
       background: rgba(8,8,8,0.85);
-      border-top: 1px solid rgba(224,255,0,0.2);
+      border-top: 1px solid rgba(96,165,250,0.2);
       font-family: var(--ff-mono); font-size: 0.42rem;
       color: var(--l-accent); letter-spacing:0.08em;
       display:flex; justify-content:space-between;
@@ -181,7 +203,7 @@
       height:100%; width:0%;
       background:var(--l-accent);
       transition: width 0.3s ease;
-      box-shadow: 0 0 6px rgba(224,255,0,0.2);
+      box-shadow: 0 0 6px rgba(96,165,250,0.2);
     }
     .l-pct {
       font-family:var(--ff-head);
@@ -245,23 +267,23 @@
 
     <!-- Top -->
     <div class="l-top">
-      <div class="l-brand">✦ SCOTT <span>UX</span> &amp; UI LAB</div>
+      <div class="l-brand">✦ SAM <span>SOKUNTHEA</span></div>
       <div class="l-sys">SYS.BOOT <span class="blink">▮</span></div>
     </div>
 
     <!-- Center card -->
     <div class="l-card">
       <div class="l-info">
-        <div class="l-name">SCOTT</div>
-        <div class="l-role">// Experience Designer</div>
+        <div class="l-name">SAM SOKUNTHEA</div>
+        <div class="l-role">// UX/UI Designer & QA Tester</div>
         <div class="l-sep"></div>
         <div class="l-desc">
-          Crafting bold, intuitive digital experiences.<br>
-          Turning complex problems into clean solutions.
+          Designing seamless interfaces and testing every interaction.<br>
+          From wireframes to Play Store — making sure it feels right.
         </div>
         <div class="l-term">
           <div class="l-term-line" data-delay="500">
-            <span class="d">&gt;</span> <span class="a">STACK</span> <span class="w">Figma · Prototype · Research</span>
+            <span class="d">&gt;</span> <span class="a">STACK</span> <span class="w">Figma · Testing · QA · Mobile</span>
           </div>
           <div class="l-term-line" data-delay="1000">
             <span class="d">&gt;</span> <span class="a">STATUS</span> all_systems_ready <span class="a">✓</span>
@@ -275,10 +297,10 @@
       <div class="l-photo">
         <img
           src="/assets/images/profile/490446589_3202793183192845_5020337764931861736_n.jpg"
-          alt="Scott" id="loader-photo" draggable="false" />
+          alt="Sam Sokunthea" id="loader-photo" draggable="false" />
         <div class="l-photo-tag">
           <span>ID:VERIFIED</span>
-          <span>UX.DESIGNER</span>
+          <span>UX/UI.QA.TESTER</span>
         </div>
       </div>
     </div>

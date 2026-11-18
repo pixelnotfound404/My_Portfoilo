@@ -3,15 +3,12 @@
     <svg class="cursor-arrow" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" fill="none">
       <polygon
         points="3,2 3,24 9,18 14,28 17.5,26.5 12.5,16.5 20,16.5"
-        fill="#e0ff00"
+        fill="#60a5fa"
         stroke="#ffffff"
         stroke-width="1"
         stroke-linejoin="round"
       />
     </svg>
-    <div class="cursor-brackets">
-      <span></span><span></span><span></span><span></span>
-    </div>
   </div>
 </template>
 

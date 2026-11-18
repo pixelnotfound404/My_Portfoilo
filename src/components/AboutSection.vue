@@ -1,6 +1,6 @@
 <template>
   <section class="about" id="about">
-    <div class="about__bg-text" aria-hidden="true">SCOTT</div>
+    <div class="about__bg-text" aria-hidden="true">SAM</div>
     <div class="about__content">
       <div class="about__left">
         <span class="section-tag">// ABOUT</span>
@@ -14,8 +14,8 @@
       <div class="about__right">
         <h2 class="about__headline">I DESIGN<br/>EXPERIENCES<br/><em>PEOPLE LOVE.</em></h2>
         <p class="about__body">
-          With 1+ years designing for startups and enterprise teams alike, I bridge the gap between
-          complex systems and the humans using them. I believe great UX is invisible — it just works.
+          With 1+ years designing interfaces and testing apps for startups and teams, I bridge the gap between
+          design and quality assurance. I believe great UX is invisible — it just works, because it's been rigorously tested.
         </p>
         <div class="about__stats">
           <div v-for="stat in stats" :key="stat.id" class="stat" :id="stat.id">

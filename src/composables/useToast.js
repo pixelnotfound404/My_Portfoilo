@@ -5,7 +5,7 @@ export function showToast(msg, isError = false) {
     toast.textContent = msg
     toast.style.cssText = `
     position:fixed;bottom:2.5rem;left:50%;transform:translateX(-50%) translateY(20px);
-    background:${isError ? '#ff4d4d' : '#e0ff00'};color:#080808;
+    background:${isError ? '#ff4d4d' : '#60a5fa'};color:#ffffff;
     font-family:'Inter',sans-serif;font-size:0.7rem;font-weight:700;
     letter-spacing:0.15em;text-transform:uppercase;
     padding:0.85rem 2rem;z-index:999999;

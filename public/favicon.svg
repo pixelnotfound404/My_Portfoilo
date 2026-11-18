@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <!-- ✦ Four-pointed star in bold neon-lime, transparent background -->
+  <!-- ✦ Four-pointed star in primary neon blue, transparent background -->
   <defs>
     <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
       <feGaussianBlur stdDeviation="1.5" result="blur"/>
@@ -16,7 +16,7 @@
     font-family="Georgia, serif"
     font-size="22"
     font-weight="900"
-    fill="#e0ff00"
+    fill="#60a5fa"
     filter="url(#glow)"
   >✦</text>
 </svg>

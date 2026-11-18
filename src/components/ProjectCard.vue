@@ -19,14 +19,20 @@
         <span v-for="pill in pills" :key="pill" class="project-card__pill">{{ pill }}</span>
       </div>
       <p class="project-card__tags">{{ tags }}</p>
+      <div class="project-card__actions">
+        <a v-if="isRoute" :href="link" class="project-card__link" :id="linkId"
+           @click.prevent="handleRouteClick">VIEW CASE →</a>
+        <a v-else :href="link" target="_blank" class="project-card__link" :id="linkId"
+           @click="handleLinkClick">VIEW CASE →</a>
+        <a v-if="storeUrl" :href="storeUrl" target="_blank" rel="noopener noreferrer"
+           class="project-card__store-btn" @click.stop>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M3.18 23.76a2 2 0 0 0 2.74-.72L12 14.4l6.08 8.64a2 2 0 1 0 3.3-2.26L15 12l6.38-8.78a2 2 0 1 0-3.3-2.26L12 9.6 5.92.96a2 2 0 1 0-3.3 2.26L9 12l-6.38 8.78a2 2 0 0 0 .56 2.98z"/>
+          </svg>
+          PLAY STORE ↗
+        </a>
+      </div>
     </div>
-    <a v-if="isRoute" :href="link" class="project-card__link" :id="linkId"
-       @click.prevent="handleRouteClick">VIEW CASE →</a>
-    <a v-else :href="link" target="_blank" class="project-card__link" :id="linkId"
-       @click="handleLinkClick">VIEW CASE →</a>
-    <span class="project-card__views">
-      👁 {{ clickCount }} {{ clickCount === 1 ? 'view' : 'views' }}
-    </span>
   </article>
 </template>
 
@@ -42,6 +48,7 @@ const props = defineProps({
   splineUrl: String, title: String, desc: String,
   pills: Array, tags: String, link: String, linkId: String,
   isRoute: { type: Boolean, default: false },
+  storeUrl: { type: String, default: null },
 })
 
 const splineContainer = ref(null)
